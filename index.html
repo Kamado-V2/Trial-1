@@ -3,854 +3,334 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071b17">
-<title>Verdant — Smart Calculator</title>
-
+<title>Verdant Calculator</title>
 <style>
-:root {
-  --bg: #071b17;
-  --glass: rgba(255,255,255,.065);
-  --border: rgba(255,255,255,.11);
-  --text: #f0fff6;
-  --muted: #8eaaa0;
-  --green: #7dffc0;
-  --green2: #25c98a;
-  --shadow: 0 25px 80px rgba(0,0,0,.35);
+*{box-sizing:border-box}
+:root{--green:#82ffc2;--bg:#071b17;--glass:rgba(255,255,255,.065)}
+body{
+ margin:0;min-height:100vh;display:grid;place-items:center;padding:20px 12px;
+ font-family:system-ui,-apple-system,sans-serif;color:#f2fff7;
+ background:radial-gradient(at 15% 15%,#20523c,transparent 45%),
+ radial-gradient(at 90% 90%,#173d36,transparent 45%),var(--bg)
 }
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px 12px;
-  background:
-    radial-gradient(ellipse at 15% 15%, #164c38 0, transparent 42%),
-    radial-gradient(ellipse at 90% 85%, #153c36 0, transparent 40%),
-    var(--bg);
-  color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-button { font: inherit; }
-
-.app {
-  width: min(100%, 440px);
-  position: relative;
-}
-
-.glow {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  filter: blur(65px);
-  opacity: .22;
-  background: #4bffad;
-  top: 15%;
-  left: -50px;
-  pointer-events: none;
-}
-
-.glass {
-  position: relative;
-  border: 1px solid var(--border);
-  background: linear-gradient(145deg,
-    rgba(255,255,255,.10), rgba(255,255,255,.025));
-  backdrop-filter: blur(26px);
-  -webkit-backdrop-filter: blur(26px);
-  box-shadow: var(--shadow);
-  border-radius: 30px;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px 20px;
-}
-
-.brand {
-  display: flex;
-  gap: 11px;
-  align-items: center;
-}
-
-.logo {
-  width: 43px;
-  height: 43px;
-  display: grid;
-  place-items: center;
-  border-radius: 15px;
-  color: #062b1b;
-  font-size: 23px;
-  font-weight: 900;
-  background: linear-gradient(145deg, #b2ffd5, #39d999);
-  box-shadow: 0 0 28px #39d99930;
-}
-
-.brand h1 {
-  font-size: 18px;
-  letter-spacing: -.6px;
-  margin: 0;
-}
-
-.brand p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.icon-btn {
-  border: 1px solid var(--border);
-  background: var(--glass);
-  color: var(--text);
-  padding: 10px 12px;
-  border-radius: 13px;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.icon-btn:hover { border-color: var(--green); }
-
-.screen {
-  padding: 23px 22px 20px;
-  margin-bottom: 15px;
-  min-width: 0;
-}
-
-.screen-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.mode {
-  display: flex;
-  padding: 4px;
-  gap: 3px;
-  background: #00000024;
-  border-radius: 10px;
-}
-
-.mode button {
-  color: var(--muted);
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  padding: 6px 11px;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.mode button.active {
-  background: #7dffc020;
-  color: var(--green);
-}
-
-.status {
-  font-size: 10px;
-  color: var(--green);
-  letter-spacing: 1.3px;
-}
-
-.expression {
-  min-height: 49px;
-  margin-top: 22px;
-  color: #a9c2b7;
-  font-size: 20px;
-  text-align: right;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-}
-
-.result {
-  margin-top: 8px;
-  font-size: clamp(34px, 9vw, 46px);
-  line-height: 1.2;
-  text-align: right;
-  font-weight: 650;
-  letter-spacing: -1.8px;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-}
-
-.preview {
-  min-height: 18px;
-  text-align: right;
-  color: var(--green);
-  font-size: 12px;
-  margin-top: 8px;
-}
-
-.screen-bottom {
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
-  margin-top: 17px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.screen-bottom button {
-  background: none;
-  color: var(--green);
-  border: 0;
-  cursor: pointer;
-}
-
-.keypad {
-  padding: 13px;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 9px;
-}
-
-.key {
-  min-width: 0;
-  min-height: 57px;
-  border: 1px solid rgba(255,255,255,.055);
-  border-radius: 17px;
-  background: rgba(255,255,255,.055);
-  color: var(--text);
-  font-size: 17px;
-  cursor: pointer;
-  transition: background .15s, transform .12s, border-color .15s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-.key:hover {
-  background: rgba(255,255,255,.12);
-  border-color: #7dffc040;
-}
-
-.key:active { transform: scale(.94); }
-
-.key.utility {
-  background: rgba(115,255,191,.085);
-  color: var(--green);
-  font-size: 14px;
-}
-
-.key.operator {
-  background: rgba(65,211,151,.10);
-  color: #a0ffd0;
-  font-size: 20px;
-}
-
-.key.equal {
-  background: linear-gradient(145deg, #9cffca, #37d795);
-  color: #052a1b;
-  font-weight: 800;
-  border: 0;
-  box-shadow: 0 6px 22px #36e69b20;
-  font-size: 23px;
-}
-
-.key.zero { grid-column: span 2; }
-
-.footer {
-  text-align: center;
-  color: #68877b;
-  font-size: 10px;
-  letter-spacing: 1px;
-  margin-top: 17px;
-}
-
-.panel {
-  display: none;
-  margin-top: 14px;
-  padding: 18px;
-}
-
-.panel.open { display: block; }
-
-.panel-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.panel h2 { font-size: 15px; margin: 0; }
-
-.history-list {
-  max-height: 230px;
-  overflow: auto;
-}
-
-.history-item {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-}
-
-.history-item .detail {
-  min-width: 0;
-  overflow: hidden;
-}
-
-.history-item .old-expr {
-  color: var(--muted);
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-
-.history-item .old-result {
-  margin-top: 4px;
-  font-size: 17px;
-  overflow-wrap: anywhere;
-}
-
-.history-item button {
-  background: none;
-  border: 0;
-  color: var(--green);
-  cursor: pointer;
-  padding: 8px;
-}
-
-.empty {
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
-  padding: 25px 0;
-}
-
-@media(max-width:360px) {
-  .keypad { gap: 6px; padding: 10px; }
-  .key { min-height: 51px; border-radius: 13px; font-size: 15px; }
-  .screen { padding: 18px 14px; }
-}
-
-@media(prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-  }
-}
+.app{width:min(100%,410px)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{background:linear-gradient(135deg,#b6ffda,#37d995);color:#063321;
+ width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-size:24px;font-weight:900}
+h1{font-size:19px;margin:0} .sub{font-size:11px;color:#94b5a6;letter-spacing:1px}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.025));
+ border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(22px);
+ -webkit-backdrop-filter:blur(22px);border-radius:25px;
+ box-shadow:0 22px 65px #0005}
+.screen{padding:20px;margin-bottom:13px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.mode{display:flex;background:#0003;border-radius:10px;padding:3px}
+.mode button{border:0;background:transparent;color:#8da99b;padding:6px 12px;border-radius:8px;font-size:12px}
+.mode button.active{color:var(--green);background:#82ffc21b}
+.status{font-size:10px;color:var(--green);letter-spacing:1px}
+.expression{margin-top:28px;min-height:28px;text-align:right;color:#9eb9ac;
+ font-size:19px;overflow-x:auto;white-space:nowrap}
+.result{margin-top:8px;text-align:right;font-size:clamp(35px,10vw,47px);
+ font-weight:650;letter-spacing:-1.5px;overflow-x:auto;white-space:nowrap}
+.message{min-height:22px;text-align:right;font-size:12px;color:var(--green);margin-top:6px}
+.tools{display:flex;justify-content:space-between;border-top:1px solid #ffffff18;
+ padding-top:13px;margin-top:15px;font-size:11px;color:#92ac9f}
+.tools button{border:0;background:none;color:var(--green);font-size:12px}
+.keys{padding:11px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.key{height:53px;border:1px solid #ffffff0b;border-radius:15px;
+ color:#f1fff6;background:rgba(255,255,255,.055);font-size:17px;transition:.15s}
+.key:active{transform:scale(.94)}
+.key:hover{background:#ffffff18}
+.fn{color:var(--green);background:#82ffc20c;font-size:13px}
+.op{color:#a3ffd0;background:#4bce951a;font-size:21px}
+.equal{background:linear-gradient(135deg,#b2ffd6,#37d995);color:#062c1c;
+ font-weight:800;font-size:24px;border:0}
+.wide{grid-column:span 2}
+.panel{display:none;margin-top:12px;padding:17px}
+.panel.open{display:block}
+.panel-head{display:flex;justify-content:space-between;align-items:center}
+.panel-head h2{font-size:15px}
+.panel button{color:var(--green);background:none;border:0}
+.item{padding:12px 0;border-bottom:1px solid #ffffff17;overflow-wrap:anywhere}
+.item small{display:block;color:#91ad9f;margin-bottom:5px}
+.item strong{font-size:17px}
+.empty{text-align:center;color:#91ad9f;padding:18px;font-size:13px}
+footer{text-align:center;color:#698a7b;font-size:10px;letter-spacing:1px;margin-top:17px}
+@media(max-width:350px){.keys{gap:5px;padding:8px}.key{height:48px;border-radius:12px;font-size:14px}}
 </style>
 </head>
-
 <body>
 <main class="app">
-  <div class="glow"></div>
+<header>
+ <div class="brand"><div class="logo">V</div><div><h1>Verdant</h1><div class="sub">SMART CALCULATOR</div></div></div>
+ <button class="key fn" id="historyToggle" style="height:40px;padding:0 12px">◷ History</button>
+</header>
 
-  <header class="header">
-    <div class="brand">
-      <div class="logo">V</div>
-      <div>
-        <h1>Verdant</h1>
-        <p>Smart calculator</p>
-      </div>
-    </div>
-    <button class="icon-btn" id="historyToggle" aria-label="Toggle history">
-      ◷ History
-    </button>
-  </header>
+<section class="glass screen">
+ <div class="top">
+  <div class="mode"><button id="deg" class="active">DEG</button><button id="rad">RAD</button></div>
+  <span class="status">● READY</span>
+ </div>
+ <div id="expression" class="expression">0</div>
+ <div id="result" class="result">0</div>
+ <div id="message" class="message">Enter a calculation</div>
+ <div class="tools"><span id="mem">MEMORY EMPTY</span><button id="copy">Copy result ↗</button></div>
+</section>
 
-  <section class="glass screen">
-    <div class="screen-top">
-      <div class="mode">
-        <button id="deg" class="active">DEG</button>
-        <button id="rad">RAD</button>
-      </div>
-      <span class="status">● READY</span>
-    </div>
+<section class="glass keys" id="keys">
+ <button class="key fn" data-a="clear">AC</button>
+ <button class="key fn" data-a="back">⌫</button>
+ <button class="key fn" data-v="(">(</button>
+ <button class="key fn" data-v=")">)</button>
+ <button class="key op" data-v="/">÷</button>
 
-    <div class="expression" id="expression" aria-label="Expression">0</div>
-    <div class="result" id="result" aria-live="polite">0</div>
-    <div class="preview" id="preview">Ready to calculate</div>
+ <button class="key fn" data-v="sin(">sin</button>
+ <button class="key fn" data-v="cos(">cos</button>
+ <button class="key fn" data-v="tan(">tan</button>
+ <button class="key fn" data-v="sqrt(">√</button>
+ <button class="key op" data-v="*">×</button>
 
-    <div class="screen-bottom">
-      <span id="memoryStatus">MEMORY EMPTY</span>
-      <button id="copyBtn">Copy result ↗</button>
-    </div>
-  </section>
+ <button class="key fn" data-v="log(">log</button>
+ <button class="key fn" data-v="ln(">ln</button>
+ <button class="key fn" data-v="^2">x²</button>
+ <button class="key fn" data-v="^">xʸ</button>
+ <button class="key op" data-v="-">−</button>
 
-  <section class="glass keypad" id="keypad">
-    <button class="key utility" data-action="clear">AC</button>
-    <button class="key utility" data-action="backspace">⌫</button>
-    <button class="key utility" data-insert="(">(</button>
-    <button class="key utility" data-insert=")">)</button>
-    <button class="key operator" data-insert="÷">÷</button>
+ <button class="key fn" data-v="pi">π</button>
+ <button class="key fn" data-v="e">e</button>
+ <button class="key fn" data-v="%">%</button>
+ <button class="key" data-v="7">7</button>
+ <button class="key op" data-v="+">+</button>
 
-    <button class="key utility" data-insert="sin(">sin</button>
-    <button class="key utility" data-insert="cos(">cos</button>
-    <button class="key utility" data-insert="tan(">tan</button>
-    <button class="key utility" data-insert="√(">√</button>
-    <button class="key operator" data-insert="×">×</button>
+ <button class="key" data-v="8">8</button>
+ <button class="key" data-v="9">9</button>
+ <button class="key" data-v="4">4</button>
+ <button class="key" data-v="5">5</button>
+ <button class="key" data-v="6">6</button>
 
-    <button class="key utility" data-insert="log(">log</button>
-    <button class="key utility" data-insert="ln(">ln</button>
-    <button class="key utility" data-insert="^2">x²</button>
-    <button class="key utility" data-insert="^">xʸ</button>
-    <button class="key operator" data-insert="-">−</button>
+ <button class="key" data-v="1">1</button>
+ <button class="key" data-v="2">2</button>
+ <button class="key" data-v="3">3</button>
+ <button class="key" data-v="0">0</button>
+ <button class="key" data-v=".">.</button>
 
-    <button class="key utility" data-insert="π">π</button>
-    <button class="key utility" data-insert="e">e</button>
-    <button class="key utility" data-insert="%">%</button>
-    <button class="key" data-insert="7">7</button>
-    <button class="key operator" data-insert="+">+</button>
+ <button class="key fn" data-a="sign">±</button>
+ <button class="key fn" data-a="memory">MS</button>
+ <button class="key fn" data-v="ans">Ans</button>
+ <button class="key fn" data-a="clear">CE</button>
+ <button class="key equal" data-a="equals">=</button>
+</section>
 
-    <button class="key" data-insert="8">8</button>
-    <button class="key" data-insert="9">9</button>
-    <button class="key" data-insert="4">4</button>
-    <button class="key" data-insert="5">5</button>
-    <button class="key" data-insert="6">6</button>
-
-    <button class="key" data-insert="1">1</button>
-    <button class="key" data-insert="2">2</button>
-    <button class="key" data-insert="3">3</button>
-    <button class="key" data-insert="0">0</button>
-    <button class="key" data-insert=".">.</button>
-
-    <button class="key utility" data-action="sign">±</button>
-    <button class="key utility" data-action="memory">MS</button>
-    <button class="key utility" data-insert="ans">Ans</button>
-    <button class="key zero" data-action="clearEntry">CE</button>
-    <button class="key equal" data-action="equals">=</button>
-  </section>
-
-  <section class="glass panel" id="historyPanel">
-    <div class="panel-head">
-      <h2>Recent calculations</h2>
-      <button class="icon-btn" id="clearHistory">Clear</button>
-    </div>
-    <div class="history-list" id="historyList">
-      <div class="empty">Your calculations will appear here.</div>
-    </div>
-  </section>
-
-  <footer class="footer">DESIGNED FOR CLARITY · BUILT FOR SPEED</footer>
+<section class="glass panel" id="panel">
+ <div class="panel-head"><h2>Calculation history</h2><button id="clearHistory">Clear</button></div>
+ <div id="history"><div class="empty">No calculations yet</div></div>
+</section>
+<footer>PRECISION · SIMPLICITY · SPEED</footer>
 </main>
 
 <script>
 "use strict";
-
 const $ = id => document.getElementById(id);
+let expr="", answer=0, memory=null, angle="DEG", history=[];
+let fresh=false;
 
-const expressionEl = $("expression");
-const resultEl = $("result");
-const previewEl = $("preview");
-const memoryStatus = $("memoryStatus");
-
-let expression = "";
-let answer = 0;
-let memory = null;
-let angleMode = "DEG";
-let justEvaluated = false;
-let history = [];
-
-function formatNumber(n) {
-  if (!Number.isFinite(n)) throw Error("Result is not finite");
-  if (Object.is(n, -0) || Math.abs(n) < 1e-14) n = 0;
-  return Number(n.toPrecision(12)).toString();
+function fmt(n){
+ if(!Number.isFinite(n)) throw Error("Result is out of range");
+ if(Math.abs(n)<1e-12)n=0;
+ return Number(n.toPrecision(12)).toString();
 }
 
-// Tokenizer: only recognized numbers, constants, functions and operators
-// are accepted. No JavaScript evaluation is used.
-function tokenize(input) {
-  const tokens = [];
-  let i = 0;
-
-  while (i < input.length) {
-    const rest = input.slice(i);
-    if (/^\s/.test(input[i])) { i++; continue; }
-
-    const number = rest.match(/^(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i);
-    if (number) {
-      tokens.push({ type: "number", value: Number(number[0]) });
-      i += number[0].length;
-      continue;
-    }
-
-    const word = rest.match(/^[a-zA-Z]+/);
-    if (word) {
-      const name = word[0].toLowerCase();
-      const allowed = [
-        "sin", "cos", "tan", "asin", "acos", "atan",
-        "sqrt", "log", "ln", "abs", "exp",
-        "pi", "e", "ans"
-      ];
-      if (!allowed.includes(name)) throw Error("Unknown function: " + name);
-      tokens.push({ type: "name", value: name });
-      i += word[0].length;
-      continue;
-    }
-
-    const char = input[i];
-    if ("+-−*/×÷^()%!".includes(char)) {
-      tokens.push({ type: "symbol", value: char });
-      i++;
-      continue;
-    }
-
-    if (char === "√") {
-      tokens.push({ type: "name", value: "sqrt" });
-      i++;
-      continue;
-    }
-
-    if (char === "π") {
-      tokens.push({ type: "name", value: "pi" });
-      i++;
-      continue;
-    }
-
-    throw Error("Invalid character");
+// A small expression parser: it never executes arbitrary JavaScript.
+function calc(input){
+ const tokens=[];
+ let i=0;
+ while(i<input.length){
+  if(/\s/.test(input[i])){i++;continue}
+  const rest=input.slice(i);
+  const nm=rest.match(/^(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i);
+  if(nm){tokens.push({t:"n",v:Number(nm[0])});i+=nm[0].length;continue}
+  const word=rest.match(/^[a-z]+/i);
+  if(word){
+   const v=word[0].toLowerCase();
+   if(!["sin","cos","tan","sqrt","log","ln","abs","pi","e","ans"].includes(v))
+    throw Error("Unknown function");
+   tokens.push({t:"w",v});i+=word[0].length;continue
   }
+  if("+-*/^()%!".includes(input[i])){tokens.push({t:"o",v:input[i++]});continue}
+  throw Error("Invalid character");
+ }
+ let p=0;
+ const peek=()=>tokens[p];
+ const eat=v=>{if(!peek()||peek().v!==v)throw Error("Check brackets");p++};
+ const angleFactor=()=>angle==="DEG"?Math.PI/180:1;
 
-  // Insert implicit multiplication: 2π, 2(3+4), (2)(3), etc.
-  const out = [];
-  const endsValue = t => t && (
-    t.type === "number" ||
-    (t.type === "name" &&
-      ["pi", "e", "ans"].includes(t.value)) ||
-    (t.type === "symbol" && (t.value === ")" || t.value === "!"))
-  );
-
-  const startsValue = t => t && (
-    t.type === "number" ||
-    t.type === "name" ||
-    (t.type === "symbol" && t.value === "(")
-  );
-
-  for (const token of tokens) {
-    const prev = out[out.length - 1];
-
-    // Do not turn a function call such as sin(30) into sin*(30).
-    const isFunctionCall = prev && prev.type === "name" &&
-      !["pi", "e", "ans"].includes(prev.value) &&
-      token.type === "symbol" && token.value === "(";
-
-    if (endsValue(prev) && startsValue(token) && !isFunctionCall) {
-      out.push({ type: "symbol", value: "*" });
+ function primary(){
+  const t=tokens[p++];
+  if(!t)throw Error("Incomplete expression");
+  let v;
+  if(t.t==="n")v=t.v;
+  else if(t.v==="("){v=add();eat(")")}
+  else if(t.t==="w"){
+   if(t.v==="pi")v=Math.PI;
+   else if(t.v==="e")v=Math.E;
+   else if(t.v==="ans")v=answer;
+   else{
+    eat("(");const x=add();eat(")");
+    if(t.v==="sqrt"&&x<0)throw Error("Negative square root");
+    if((t.v==="log"||t.v==="ln")&&x<=0)throw Error("Input must be positive");
+    if(t.v==="sin")v=Math.sin(x*angleFactor());
+    if(t.v==="cos")v=Math.cos(x*angleFactor());
+    if(t.v==="tan"){
+     if(Math.abs(Math.cos(x*angleFactor()))<1e-12)throw Error("Undefined tangent");
+     v=Math.tan(x*angleFactor())
     }
+    if(t.v==="sqrt")v=Math.sqrt(x);
+    if(t.v==="log")v=Math.log10(x);
+    if(t.v==="ln")v=Math.log(x);
+    if(t.v==="abs")v=Math.abs(x);
+   }
+  }else throw Error("Invalid expression");
 
-    out.push(token);
+  while(peek()&&(peek().v==="%"||peek().v==="!")){
+   const op=tokens[p++].v;
+   if(op==="%")v/=100;
+   else{
+    if(v<0||v>170||!Number.isInteger(v))throw Error("Factorial needs an integer from 0 to 170");
+    let f=1;for(let j=2;j<=v;j++)f*=j;v=f;
+   }
   }
-
-  return out;
+  return v;
+ }
+ function unary(){
+  if(peek()&&peek().v==="+"){p++;return unary()}
+  if(peek()&&peek().v==="-"){p++;return -unary()}
+  return primaryPower()
+ }
+ function primaryPower(){
+  let v=primary();
+  if(peek()&&peek().v==="^"){p++;v=Math.pow(v,unary())}
+  return v
+ }
+ function mul(){
+  let v=unary();
+  while(peek()){
+   const op=peek().v;
+   if(op==="*"||op==="/"){
+    p++;const r=unary();
+    if(op==="/"&&r===0)throw Error("Cannot divide by zero");
+    v=op==="*"?v*r:v/r;
+   }else if(peek().t==="n"||peek().v==="("||
+       (peek().t==="w"&&["sin","cos","tan","sqrt","log","ln","abs","pi","e","ans"].includes(peek().v))){
+    v*=unary();
+   }else break;
+  }
+  return v;
+ }
+ function add(){
+  let v=mul();
+  while(peek()&&(peek().v==="+"||peek().v==="-")){
+   const op=tokens[p++].v,r=mul();
+   v=op==="+"?v+r:v-r;
+  }
+  return v;
+ }
+ const value=add();
+ if(p!==tokens.length)throw Error("Incomplete expression");
+ if(!Number.isFinite(value))throw Error("Invalid result");
+ return value;
 }
 
-function calculate(input) {
-  const tokens = tokenize(input);
-  if (!tokens.length) return 0;
+function render(){
+ $("expression").textContent=expr||"0";
+ $("mem").textContent=memory===null?"MEMORY EMPTY":"MEMORY SAVED";
+ if(!expr){$("result").textContent="0";$("message").textContent="Enter a calculation";return}
+ try{
+  $("result").textContent=fmt(calc(expr));
+  $("message").textContent="Live calculation";
+ }catch(e){
+  $("result").textContent="—";
+  $("message").textContent=e.message;
+ }
+}
+function insert(v){
+ if(fresh){
+  if(/[0-9.]/.test(v)&&v.length===1)expr="";
+  fresh=false;
+ }
+ expr+=v;render();
+}
+function clear(){expr="";fresh=false;render()}
+function back(){expr=expr.slice(0,-1);fresh=false;render()}
 
-  let pos = 0;
-  const peek = () => tokens[pos];
-  const take = () => tokens[pos++];
-
-  const expect = value => {
-    const t = take();
-    if (!t || t.value !== value) throw Error("Check your brackets");
-  };
-
-  function primary() {
-    const t = take();
-    if (!t) throw Error("Incomplete expression");
-
-    if (t.type === "number") return t.value;
-
-    if (t.type === "symbol" && t.value === "(") {
-      const v = addSub();
-      expect(")");
-      return v;
-    }
-
-    if (t.type === "name") {
-      const name = t.value;
-
-      if (name === "pi") return Math.PI;
-      if (name === "e") return Math.E;
-      if (name === "ans") return answer;
-
-      expect("(");
-      const x = addSub();
-      expect(")");
-
-      const angle = angleMode === "DEG" ? Math.PI / 180 : 1;
-
-      switch (name) {
-        case "sin": return Math.sin(x * angle);
-        case "cos": return Math.cos(x * angle);
-        case "tan":
-          if (Math.abs(Math.cos(x * angle)) < 1e-12)
-            throw Error("Tangent is undefined here");
-          return Math.tan(x * angle);
-        case "asin":
-          if (x < -1 || x > 1) throw Error("Input must be between −1 and 1");
-          return Math.asin(x) / angle;
-        case "acos":
-          if (x < -1 || x > 1) throw Error("Input must be between −1 and 1");
-          return Math.acos(x) / angle;
-        case "atan": return Math.atan(x) / angle;
-        case "sqrt":
-          if (x < 0) throw Error("Square root of a negative number");
-          return Math.sqrt(x);
-        case "log":
-          if (x <= 0) throw Error("Log input must be positive");
-          return Math.log10(x);
-        case "ln":
-          if (x <= 0) throw Error("ln input must be positive");
-          return Math.log(x);
-        case "abs": return Math.abs(x);
-        case "exp": return Math.exp(x);
-      }
-    }
-
-    throw Error("Invalid expression");
-  }
-
-  function factorial(n) {
-    if (n < 0 || !Number.isInteger(n) || n > 170)
-      throw Error("Factorial requires an integer from 0 to 170");
-    let v = 1;
-    for (let i = 2; i <= n; i++) v *= i;
-    return v;
-  }
-
-  function postfix() {
-    let v = primary();
-
-    while (peek() && ["%", "!"].includes(peek().value)) {
-      const op = take().value;
-      if (op === "%") v /= 100;
-      if (op === "!") v = factorial(v);
-    }
-    return v;
-  }
-
-  function power() {
-    let a = postfix();
-    if (peek() && peek().value === "^") {
-      take();
-      a = Math.pow(a, unary());
-    }
-    return a;
-  }
-
-  function unary() {
-    if (peek() && ["+", "-", "−"].includes(peek().value)) {
-      const op = take().value;
-      const v = unary();
-      return op === "+" ? v : -v;
-    }
-    return power();
-  }
-
-  function multiplyDivide() {
-    let v = unary();
-
-    while (peek() && ["*", "/", "×", "÷"].includes(peek().value)) {
-      const op = take().value;
-      const rhs = unary();
-
-      if ((op === "/" || op === "÷") && rhs === 0)
-        throw Error("Cannot divide by zero");
-
-      v = (op === "*" || op === "×") ? v * rhs : v / rhs;
-    }
-    return v;
-  }
-
-  function addSub() {
-    let v = multiplyDivide();
-
-    while (peek() && ["+", "-", "−"].includes(peek().value)) {
-      const op = take().value;
-      const rhs = multiplyDivide();
-      v = op === "+" ? v + rhs : v - rhs;
-    }
-    return v;
-  }
-
-  const value = addSub();
-  if (pos !== tokens.length) throw Error("Check the expression");
-  if (!Number.isFinite(value)) throw Error("Result is out of range");
-  return value;
+function equals(){
+ if(!expr)return;
+ try{
+  const original=expr,value=calc(expr),formatted=fmt(value);
+  answer=value;
+  history.unshift({original,formatted});
+  history=history.slice(0,25);
+  renderHistory();
+  $("expression").textContent=original+" =";
+  $("result").textContent=formatted;
+  $("message").textContent="Calculated successfully ✓";
+  expr=formatted;fresh=true;
+ }catch(e){$("message").textContent=e.message}
+}
+function renderHistory(){
+ const box=$("history");box.replaceChildren();
+ if(!history.length){box.innerHTML='<div class="empty">No calculations yet</div>';return}
+ history.forEach(h=>{
+  const row=document.createElement("div");row.className="item";
+  const small=document.createElement("small");small.textContent=h.original;
+  const strong=document.createElement("strong");strong.textContent=h.formatted;
+  const use=document.createElement("button");use.textContent="Use ↗";
+  use.style.float="right";
+  use.onclick=()=>{expr=h.formatted;fresh=true;render();$("panel").classList.remove("open")};
+  row.append(small,strong,use);box.append(row);
+ });
 }
 
-function render() {
-  expressionEl.textContent = expression || "0";
-  memoryStatus.textContent = memory === null
-    ? "MEMORY EMPTY"
-    : "MEMORY SAVED";
-
-  if (!expression) {
-    resultEl.textContent = "0";
-    previewEl.textContent = "Ready to calculate";
-    return;
-  }
-
-  try {
-    const value = calculate(expression);
-    resultEl.textContent = formatNumber(value);
-    previewEl.textContent = "Live result";
-  } catch (err) {
-    // A partial expression is normal while typing.
-    resultEl.textContent = "—";
-    previewEl.textContent = err.message || "Enter an expression";
-  }
-}
-
-function insert(value) {
-  if (justEvaluated) {
-    if (/^[0-9.]$/.test(value)) {
-      expression = "";
-    } else if (["+", "-", "−", "×", "÷", "^", "%", "!"].includes(value)) {
-      // Continue from the last answer.
-      expression = formatNumber(answer);
-    } else {
-      expression = "";
-    }
-    justEvaluated = false;
-  }
-
-  expression += value;
-  render();
-}
-
-function clearAll() {
-  expression = "";
-  justEvaluated = false;
-  render();
-}
-
-function backspace() {
-  expression = expression.slice(0, -1);
-  justEvaluated = false;
-  render();
-}
-
-function toggleSign() {
-  if (!expression) {
-    expression = "-";
-  } else if (expression.startsWith("-(") && expression.endsWith(")")) {
-    expression = expression.slice(2, -1);
-  } else {
-    expression = "-(" + expression + ")";
-  }
-  justEvaluated = false;
-  render();
-}
-
-function equals() {
-  if (!expression.trim()) return;
-
-  try {
-    const value = calculate(expression);
-    const formatted = formatNumber(value);
-
-    history.unshift({
-      expression,
-      result: formatted,
-      value
-    });
-    history = history.slice(0, 30);
-
-    answer = value;
-    expressionEl.textContent = expression + " =";
-    resultEl.textContent = formatted;
-    previewEl.textContent = "Calculation complete ✓";
-
-    expression = formatted;
-    justEvaluated = true;
-    renderHistory();
-  } catch (err) {
-    previewEl.textContent = err.message || "Invalid expression";
-  }
-}
-
-function renderHistory() {
-  const list = $("historyList");
-  list.replaceChildren();
-
-  if (!history.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "Your calculations will appear here.";
-    list.appendChild(empty);
-    return;
-  }
-
-  history.forEach(item => {
-    const row = document.createElement("div");
-    row.className = "history-item";
-
-    const detail = document.createElement("div");
-    detail.className = "detail";
-
-    const expr = document.createElement("div");
-    expr.className = "old-expr";
-    expr.textContent = item.expression;
-
-    const res = document.createElement("div");
-    res.className = "old-result";
-    res.textContent = item.result;
-
-    const use = document.createElement("button");
-    use.textContent = "Use ↗";
-    use.setAttribute("aria-label", "Reuse " + item.result);
-    use.addEventListener("click", () => {
-      expression = item.result;
-      answer = item.value;
-      justEvaluated = true;
-      render();
-      $("historyPanel").classList.remove("open");
-    });
-
-    detail.append(expr, res);
-    row.append(detail, use);
-    list.appendChild(row);
-  });
-}
-
-$("keypad").addEventListener("click", event => {
-  const button = event.target.closest("button");
-  if (!button) return;
-
-  if (button.dataset.insert !== undefined) {
-    insert(button.dataset.insert);
-    return;
-  }
-
-  switch (button.dataset.action) {
-    case "clear": clearAll(); break;
-    case "backspace": backspace(); break;
-    case "equals": equals(); break;
-    case "sign": toggleSign(); break;
-    case "clearEntry":
-      expression = "";
-      justEvaluated = false;
-      render();
-      break;
-    case "memory":
-      try {
-        memory = expression ? calculate(expression) : answer;
-        memoryStatus.textContent = "MEMORY SAVED";
-        previewEl.textContent = "Result saved to memory";
-      } catch {
-        previewEl.textContent = "Enter a valid result first";
-      }
-      break;
-  }
+$("keys").addEventListener("click",e=>{
+ const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.v!==undefined){insert(b.dataset.v);return}
+ switch(b.dataset.a){
+  case "clear":clear();break;
+  case "back":back();break;
+  case "equals":equals();break;
+  case "sign":expr=expr?"-("+expr+")":"-";fresh=false;render();break;
+  case "memory":
+   try{memory=expr?calc(expr):answer;$("message").textContent="Memory saved"}
+   catch{$("message").textContent="Enter a valid calculation"}
+   render();break;
+ }
 });
+function setAngle(a){
+ angle=a;$("deg").classList.toggle("active",a==="DEG");
+ $("rad").classList.toggle("active",a==="RAD");render()
+}
+$("deg").onclick=()=>setAngle("DEG");
+$("rad").onclick=()=>setAngle("RAD");
+$("historyToggle").onclick=()=>$("panel").classList.toggle("open");
+$("clearHistory").onclick=()=>{history=[];renderHistory()};
+$("copy").onclick=async()=>{
+ try{await navigator.clipboard.writeText($("result").textContent);
+ $("message").textContent="Copied successfully ✓"}
+ catch{$("message").textContent="Copy unavailable in this browser"}
+};
+document.addEventListener("keydown",e=>{
+ if(e.ctrlKey||e.metaKey||e.altKey)return;
+ if(/^[0-9.]$/.test(e.key))insert(e.key);
+ else if("+-*/^()%".includes(e.key))insert(e.key);
+ else if(e.key==="Enter"||e.key==="="){e.preventDefault();equals()}
+ else if(e.key==="Backspace")back();
+ else if(e.key==="Escape")clear();
+});
+render();
+</script>
+</body>
+</html>
 
-$("deg").addEven
